@@ -19,13 +19,13 @@ images: requirements.txt ## Build container images
 install-tools:	install-woke ## Install required utilities/tools
 	# OLS 1085: Service build failure issue caused by newest PDM version
 	# (right now we need to stick to PDM specified in pyproject.toml file)
-	@command -v pdm > /dev/null || { echo >&2 "pdm is not installed. Installing..."; pip install pdm; }
+	@command -v pdm > /dev/null || { echo >&2 "pdm is not installed. Installing..."; pip3 install pdm; }
 	pdm --version
 	# this is quick fix for OLS-758: "Verify" CI job is broken after new Mypy 1.10.1 was released 2 days ago
 	# CI job configuration would need to be updated in follow-up task
 	# pip uninstall -v -y mypy 2> /dev/null || true
 	# display setuptools version
-	pip show setuptools
+	pip3 show setuptools
 	export PIP_DEFAULT_TIMEOUT=100
 	# install all dependencies, including devel ones
 	pdm install --dev --fail-fast -v
@@ -57,7 +57,7 @@ update-deps: ## Check pyproject.toml for changes, update the lock file if needed
 	pdm install --dev
 
 run: ## Run the service locally
-	python runner.py
+	python3 runner.py
 
 test: test-unit test-integration test-e2e ## Run all tests
 
@@ -120,7 +120,7 @@ requirements.txt:	pyproject.toml pdm.lock ## Generate requirements.txt file cont
 	pdm export --prod --format requirements --output requirements.txt
 
 verify-packages-completeness:	requirements.txt ## Verify that requirements.txt file contains complete list of packages
-	pip download -d /tmp/ --use-pep517 --verbose -r requirements.txt
+	pip3 download -d /tmp/ --use-pep517 --verbose -r requirements.txt
 
 get-rag: ## Download a copy of the RAG embedding model and vector database
 	podman create --replace --name tmp-rag-container $$(cat build.args | awk 'BEGIN{FS="="}{print $$2}') true
